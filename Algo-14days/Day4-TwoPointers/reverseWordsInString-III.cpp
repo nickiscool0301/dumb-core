@@ -16,7 +16,7 @@ string reverseWords(string s)
     {
         if (s[j] == ' ')
         {
-            reverse(s.begin(), s.begin() + j);
+            reverse(s.begin() + i, s.begin() + j);
             i = j + 1;
         }
     }
