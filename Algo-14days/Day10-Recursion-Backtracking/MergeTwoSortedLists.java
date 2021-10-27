@@ -1,4 +1,4 @@
-class MergeTwoSortedLists {
+public class MergeTwoSortedLists {
     // LinkList Node class
     public class ListNode {
         int val;
