@@ -4,56 +4,51 @@
 
 using namespace std;
 
-bool isValid(pair<int, int> cell, int n, int m)
-{
-    if (cell.first < 0 || cell.second < 0 || cell.first >= n || cell.second >= m)
-    {
-        return false;
-    }
-    return true;
-}
-
 int orangesRotting(vector<vector<int>> &grid)
 {
-    int n = grid.size();
-    int m = grid[0].size();
-    vector<vector<int>> res(n, vector<int>(m, -1)); // not visited
-    queue<pair<int, int>> queue;
-    int count = 0;
 
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
+    vector<int> dir = {-1, 0, 1, 0, -1}; // used for finding all 4 adjacent coordinates
+
+    int m = grid.size();
+    int n = grid[0].size();
+
+    queue<pair<int, int>> q;
+    int fresh = 0; // To keep track of all fresh oranges left
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n; j++)
         {
             if (grid[i][j] == 2)
-            {
-                res[i][j] = 2;
-                queue.push({i, j});
-            }
-            else
-                res[i][j] = 0;
+                q.push({i, j});
+            if (grid[i][j] == 1)
+                fresh++;
         }
-    }
-    const int dx[] = {0, 0, 1, -1};
-    const int dy[] = {1, -1, 0, 0};
-
-    while (!queue.empty())
+    int ans = -1; // initialised to -1 since after each step we increment the time by 1 and initially all rotten oranges started at 0.
+    while (!q.empty())
     {
-        pair<int, int> node = queue.front();
-        queue.pop();
-
-        for (int t = 0; t < 4; t++)
+        int sz = q.size();
+        while (sz--)
         {
-            pair<int, int> neighbor = {node.first + dx[t], node.second + dy[t]};
-            if (isValid(neighbor, n, m) && res[neighbor.first][neighbor.second] == -1)
+            pair<int, int> p = q.front();
+            q.pop();
+            for (int i = 0; i < 4; i++)
             {
-                res[neighbor.first][neighbor.second] = res[node.first][node.second] - 1;
-                queue.push(neighbor);
-                count++;
+                int r = p.first + dir[i];
+                int c = p.second + dir[i + 1];
+                if (r >= 0 && r < m && c >= 0 && c < n && grid[r][c] == 1)
+                {
+                    grid[r][c] = 2;
+                    q.push({r, c});
+                    fresh--; // decrement by 1 foreach fresh orange that now is rotten
+                }
             }
         }
+        ans++; // incremented after each minute passes
     }
-    return count;
+    if (fresh > 0)
+        return -1; // if fresh>0 that means there are fresh oranges left
+    if (ans == -1)
+        return 0; // we initialised with -1, so if there were no oranges it'd take 0 mins.
+    return ans;
 }
 
 int main()
