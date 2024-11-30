@@ -43,9 +43,7 @@ public class MaxSumSubarrayEqualsK {
 
             // Only add currentSum to the map if it doesn't exist
             // to keep the smallest index for that sum
-            if (!prefixSumMap.containsKey(currentSum)) {
-                prefixSumMap.put(currentSum, i);
-            }
+            hm.putIfAbsent(currentSum,i);
         }
 
         return maxLength;
