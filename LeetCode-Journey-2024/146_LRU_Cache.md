@@ -9,88 +9,84 @@
   - RemoveLRU
   - moveToHead
 
+## Update 17/1/2025
+- To reduce complexity, only need to use two helper functions
+  - removeNode(Node node)
+  - moveToFront(Node node)
+- get: check if cache misses the key -> return -1. Else, create a Node, removeNode(Node) -> moveToFront(Node) -> return node.value
+- put: check if cache existed -> If existed -> get the existing Node, update the value -> removeNode -> moveToFront
+  - Else, if passing capacity -> removeLastNode by using tail.prev, cache.remove(tail.prev.key), removeNode(tail.prev) -> then create new Node, add to cache, moveToFront
 
 ```java
 class LRUCache {
+  class Node {
+    int key;
+    int value;
+    Node prev;
+    Node next;
 
-    private class Node {
-        int key;
-        int value;
-        Node next;
-        Node prev;
-
-        public Node(int key, int value) {
-            this.key = key;
-            this.value = value;
-        }
+    public Node(int key, int value) {
+      this.key = key;
+      this.value = value;
     }
+  }
 
-    private Node head;
-    private Node tail;
-    private int capacity;
-    private Map<Integer, Node> hm;
+  private Node head;
+  private Node tail;
+  private Map<Integer, Node> cache;
+  private int capacity;
+
+  public LRUCache(int capacity) {
+    this.capacity = capacity;
+    this.cache = new HashMap<>();
+    this.head = new Node(0,0);
+    this.tail = new Node(0,0);
+    head.next = tail;
+    tail.prev = head;
+  }
 
 
-    public LRUCache(int capacity) {
-        this.capacity = capacity;
-        this.hm = new HashMap<>();
-        this.head = new Node(0,0);
-        this.tail = new Node(0,0);
-        head.next = tail;
-        tail.prev = head;
+  //get(int key) -> return value
+  public int get(int key) {
+    if(!cache.containsKey(key)) return -1;
+    Node cachedNode = cache.get(key);
+    //move to the front
+    removeNode(cachedNode);
+    moveToFront(cachedNode);
+    return cachedNode.value;
+  }
+
+  private void removeNode(Node node) {
+    node.prev.next = node.next;
+    node.next.prev = node.prev;
+  }
+
+  private void moveToFront(Node node) {
+    node.next = head.next;
+    node.prev = head;
+    head.next.prev = node;
+    head.next = node;
+  }
+
+
+  //put(int key, int value) -> void
+  public void put(int key, int value) {
+    if(cache.containsKey(key)) {
+      Node existedNode = cache.get(key);
+      existedNode.value = value;
+      removeNode(existedNode);
+      moveToFront(existedNode);
+    } else {
+      if(cache.size() == capacity) {
+        Node lastNode = tail.prev;
+        cache.remove(lastNode.key);
+        removeNode(lastNode);
+      }
+      Node newNode = new Node(key, value);
+      cache.put(key, newNode);
+      moveToFront(newNode);
     }
-
-    public int get(int key) {
-        if(!hm.containsKey(key)) {
-            return -1;
-        }
-        Node node = hm.get(key);
-        moveToHead(node);
-        return node.value;
-        
-    }
-    
-    public void put(int key, int value) {
-        if(hm.containsKey(key)) {
-            Node node = hm.get(key);
-            node.value = value;
-            moveToHead(node);
-        } else {
-            if(hm.size() == capacity) {
-                removeLRU();
-            } 
-            Node newNode = new Node(key, value);
-            hm.put(key, newNode);
-            addToHead(newNode);
-        }
-        
-    }
-
-    private void removeLRU() {
-        Node prevTail = tail.prev;
-        hm.remove(prevTail.key);
-        removeNode(prevTail);
-
-    }
-
-
-    private void moveToHead(Node node) {
-        removeNode(node);
-        addToHead(node);
-
-    }
-
-    private void removeNode(Node node) {
-        node.prev.next = node.next;
-        node.next.prev = node.prev;
-    }
-
-    private void addToHead(Node node) {
-        node.next = head.next;
-        node.prev = head;
-        head.next.prev = node;
-        head.next = node;
-    }
+  }
 }
 
 /**
