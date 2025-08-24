@@ -1,11 +1,14 @@
 - This is a premium leetcode problem
 
 ## Notes
+
 - Brute force: take O(N^3)
 - Use hashmap and prefix sum
 
 ## Solution
+
 ### 11/24/2024
+
 - it takes me a while to understand about the solution!!!
 - Basically, we have this formula:
   - sum[i:j] = prefixSum[j] - prefixSum[i-1]
