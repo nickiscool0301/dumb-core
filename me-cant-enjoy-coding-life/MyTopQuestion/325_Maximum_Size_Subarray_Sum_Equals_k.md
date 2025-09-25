@@ -62,3 +62,24 @@ public class MaxSumSubarrayEqualsK {
 }
 
 ```
+
+
+### 12/25/2025
+- Still struggle a bit
+- Still use hashmap, but this time, I use python
+
+```python
+class Solution:
+    def maxSubArrayLen(self, nums: List[int], k: int) -> int:
+        prefix = 0
+        res = 0
+        seen = {0: -1} 
+        for num in nums:
+            prefix += num
+            if prefix -k in seen:
+                res = max(res, i - seen[prefix - k])
+            if prefix not in seen:
+                seen[prefix] = i
+        return res
+
+```
