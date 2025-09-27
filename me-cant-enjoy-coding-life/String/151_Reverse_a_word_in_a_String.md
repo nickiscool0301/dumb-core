@@ -36,3 +36,19 @@ class Solution {
     }
 }
 ```
+
+
+### 09/25/2025
+```python
+class Solution:
+    def reverseWords(self, s: str) -> str:
+        N = len(s)
+        res = []
+        r = N 
+        for l in range(N-1, -1,-1):
+            if s[l] == " ":
+                r = l
+            elif l == 0 or s[l-1] == " ":
+                res.append(s[l:r])
+        return " ".join(res)
+```
