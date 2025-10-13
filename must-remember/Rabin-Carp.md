@@ -15,8 +15,9 @@
 - If hash matches, check substring directly
 
 ## Hash Formula
-hash(s) = (s[0]*d^(m-1) + s[1]*d^(m-2) + ... + s[m-1]) % q
+hash(s) = (s[0]*p^(n-1) + s[1]*p^(n-2) + ... + s[n-1]*p^0) mod m
 
-d: base (like 256 for ASCII)
-q: large prime
-m: pattern length
+p: small prime (31,33)
+m: large prime modules: 1e9 + 9
+
+hash_next = ((hash_curr - s[i]*p^(m-1)) * p + s[i+m]) mod m
